@@ -3,19 +3,134 @@
 
 #include "pch.h"
 #include <iostream>
+#include <string>
+#include <vector>
+#include <ctype.h>
+
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	string lineInput = "";
+	vector<string> strVector;
+	vector<string> strVector2;
+	vector<string> ansVector;
+
+	while (!lineInput.size())
+		getline(cin, lineInput);
+
+	size_t strLength = lineInput.size() - 1;
+
+	int startIndex = 0;
+	int vector1Size = 0;
+	int vector2Size = 0;
+	int currentIndex = 0;
+
+	int bracketCount = 0;
+
+	for (int strIter = 0; strIter < strLength + 1; strIter++)
+	{
+		//cout << "Checking Character: " << lineInput[strIter] << "   ";
+		if (lineInput[strIter] == '{')
+			bracketCount += 1;
+		if (lineInput[strIter] == '}')
+			bracketCount -= 1;
+
+		if (lineInput[strIter] == '{' && strIter != 0)
+		{
+			currentIndex = strIter;
+			startIndex = vector1Size - 1;
+			break;
+		}
+		if (lineInput[strIter] == '}' && strIter != 0)
+		{	
+			currentIndex = strIter;
+			break;
+		}
+		//check first character
+		if (isalpha(lineInput[strIter]))
+		{
+			string s(1, lineInput[strIter]);
+			strVector.push_back(s);
+			vector1Size += 1;
+			continue;
+		}
+
+		if (lineInput[strIter] == '{'  || lineInput[strIter] == ',')
+		{
+			if (isalpha(lineInput[strIter+1]))
+				continue;
+			else
+			{
+				cout << "Invalid Character" << endl;
+				return 0;
+			}
+		}
+	
+	}
+
+	for (int strIter = currentIndex + 1; strIter < strLength + 1; strIter++)
+	{
+		if (lineInput[strIter] == '{')
+			bracketCount += 1;
+		if (lineInput[strIter] == '}')
+			bracketCount -= 1;
+
+		//check first character
+		if (isalpha(lineInput[strIter]))
+		{
+			string s(1, lineInput[strIter]);
+			strVector2.push_back(s);
+			vector2Size += 1;
+			continue;
+		}
+
+		if (lineInput[strIter] == '{' || lineInput[strIter] == ',')
+		{
+			if (isalpha(lineInput[strIter + 1]))
+				continue;
+			else
+			{
+				cout << "Invalid Character" << endl;
+				return 0;
+			}
+		}
+
+	}
+	
+	if (strVector2.size())
+	{
+		for (int strIter = 0; strIter < vector1Size; strIter++)
+		{
+			for (int strIter2 = 0; strIter2 < vector2Size; strIter2++)
+			{
+				ansVector.push_back(strVector[strIter]);
+				string s = (string)strVector2[strIter2];
+				if (strIter >= startIndex)
+					ansVector.back() += s;
+				else
+					break;
+			}
+		}
+	}
+	else
+	{
+		for (int strIter = 0; strIter < vector1Size; strIter++)
+			ansVector.push_back(strVector[strIter]);
+	}
+	
+
+	//Check start and end character for curly brackets
+	if (lineInput[0] != '{' || lineInput[strLength] != '}' || bracketCount != 0)
+	{
+		cout << "Invalid Format" << endl;
+	}
+	else
+	{
+		cout << "The output is: ";
+		for (int iter = 0; iter < ansVector.size(); iter++)
+			cout << ansVector[iter] << "   ";
+		
+	}
+	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
